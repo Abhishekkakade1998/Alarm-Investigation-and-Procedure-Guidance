@@ -1,0 +1,162 @@
+OPERATING PROCEDURE FOR BOILER FEED PUMP SYSTEMS
+ABB Industrial Automation Guide - Document Version 2.1
+
+1. OVERVIEW
+Boiler Feed Pumps are critical equipment in thermal power plants and refineries. These pumps are responsible for maintaining consistent water supply to boilers under high pressure and elevated temperatures. Proper operation and monitoring are essential for safe and reliable plant operation.
+
+2. NORMAL OPERATING CONDITIONS
+The Boiler Feed Pump (BFP) operates under the following nominal conditions:
+- Discharge Pressure: 250-280 bar
+- Suction Pressure: 2-5 bar (depending on feed water heater configuration)
+- Operating Temperature: 160-180°C
+- Flow Rate: 100-150 m³/h (asset dependent)
+- Vibration Level: < 4.5 mm/s RMS
+- Motor Current: 85-110 A
+
+2.1 STARTUP PROCEDURE
+1. Check suction line isolation valve is fully open
+2. Open drain valves to release trapped air
+3. Verify discharge line back pressure is within limits
+4. Start motor using control system
+5. Monitor pressure rise on discharge gauge
+6. Check for leakage at gland seals and connections
+7. Allow 15 minutes for stabilization
+8. Record baseline vibration reading
+
+2.2 NORMAL OPERATION
+- Monitor discharge pressure continuously
+- Check for abnormal vibration or noise
+- Verify motor current consumption is normal
+- Maintain operating log with 4-hour intervals
+- Check seal coolant flow if applicable
+- Monitor bearing temperature
+
+3. ALARM MANAGEMENT
+3.1 High Discharge Pressure Alarm (280 bar)
+This alarm indicates discharge pressure exceeding safe operating limits.
+
+CAUSES:
+- Downstream blockage or valve closure
+- Increased system resistance
+- Recirculation valve failure
+- Check valve stuck closed
+- Control valve calibration error
+
+IMMEDIATE ACTIONS:
+1. Reduce pump speed gradually using speed control
+2. Check discharge line for blockages
+3. Verify downstream pressure relief valve functionality
+4. Open discharge isolation valve fully
+5. If pressure remains high, reduce suction valve opening to 75%
+6. Contact maintenance if unable to normalize within 5 minutes
+
+INVESTIGATION:
+- Check downstream equipment for operational status
+- Review recent modifications to discharge line
+- Verify all downstream isolation valves are open
+- Test pressure relief valve setpoint
+
+3.2 Vibration Alarm (> 5 mm/s)
+Excessive vibration indicates mechanical problems.
+
+CAUSES:
+- Cavitation at pump inlet (common cause)
+- Bearing wear or misalignment
+- Impeller wear or damage
+- Foundation bolt looseness
+- Suction line blockage
+- Cavitation from low suction pressure
+
+IMMEDIATE ACTIONS:
+1. Check suction pressure gauge - if below 2 bar, investigate
+2. Inspect for unusual noise patterns
+3. Check feed water heater outlet temperature
+4. Verify suction strainer is not blocked
+5. Reduce pump speed by 10-20% to test
+6. If vibration persists, prepare for shutdown
+
+INVESTIGATION:
+- Review recent suction line maintenance
+- Check feed water heater performance
+- Verify suction line is fully open
+- Inspect suction strainer differential pressure
+- Schedule bearing inspection
+
+3.3 Temperature High Alarm (185°C)
+Operating temperature above safe limit indicates thermal stress.
+
+CAUSES:
+- Excessive recirculation flow
+- Low feed water temperature from preheater
+- High discharge pressure requiring throttling
+- Bearing cooling water insufficient
+- Vibration-induced friction heating
+
+IMMEDIATE ACTIONS:
+1. Check bearing cooling water flow and temperature
+2. Verify feed water heater is operating normally
+3. Reduce pump speed slightly
+4. Check for any discharge line restrictions
+5. If bearings are hot, reduce pressure by opening recirculation valve
+6. If cooling water is low, investigate source
+
+INVESTIGATION:
+- Review feed water heating system performance
+- Check thermocouple calibration
+- Verify pump speed settings
+- Inspect bearing cooling lines for blockage
+
+3.4 Motor Trip Alarm
+Motor protection has been triggered.
+
+CAUSES:
+- Pump cavitation causing high current draw
+- Suction line blockage
+- Bearing seize or lockup
+- Motor overload from high pressure
+- Electrical fault
+
+IMMEDIATE ACTIONS:
+1. Do not restart immediately
+2. Wait 5 minutes for motor to cool
+3. Check suction pressure and temperature
+4. Verify discharge pressure is not excessive
+5. Listen for unusual sounds when restarting
+6. If trip occurs again within 30 minutes, investigate before restart
+
+INVESTIGATION:
+- Check suction strainer condition
+- Verify feed water quality and temperature
+- Review recent maintenance history
+- Inspect mechanical seals for wear
+- Check motor cooling
+
+4. PREVENTIVE MAINTENANCE
+- Daily: Visual inspection, pressure checks, vibration monitoring
+- Weekly: Bearing temperature logging, alignment check
+- Monthly: Suction strainer cleaning, mechanical seal inspection
+- Quarterly: Detailed vibration analysis
+- Annually: Bearing replacement (planned), full pump inspection
+
+5. DOCUMENTATION
+All alarms and manual actions must be logged in the operations log with:
+- Time of event
+- Cause identified
+- Actions taken
+- Resolution time
+- Operator name
+- Supervisor sign-off for critical events
+
+6. EMERGENCY PROCEDURES
+In case of uncontrollable alarms or equipment damage, execute emergency shutdown:
+1. Reduce pump speed to minimum
+2. Close suction isolation valve
+3. Open discharge recirculation valve fully
+4. Stop motor
+5. Notify senior operator and maintenance
+6. Do not restart without supervisor approval
+
+---
+Document Revision Date: 2026-03-15
+Next Review Date: 2027-03-15
+Approved By: Operations Manager, Reliability Engineer

@@ -1,0 +1,157 @@
+MOTOR TROUBLESHOOTING AND MAINTENANCE GUIDE
+ABB Electric Motors - Technical Reference
+
+1. MOTOR TRIP ALARM INVESTIGATION
+
+Motor trip alarms are protection signals indicating abnormal motor conditions.
+
+1.1 COMMON CAUSES
+- Pump cavitation due to low suction pressure
+- Mechanical blockage in pump or downstream line
+- Bearing failure or excessive friction
+- Electrical fault or phase imbalance
+- Overload from high system pressure
+- Thermal overload from prolonged high current
+
+1.2 DIAGNOSTIC PROCEDURE
+Step 1: Check Motor Temperature
+- Use infrared thermometer on motor frame
+- Normal: 60-80°C in steady state
+- Action if > 90°C: Wait for cool-down before restart
+
+Step 2: Verify Motor Insulation
+- Measure resistance between windings and frame ground
+- Acceptable: > 10 MΩ
+- Action if < 5 MΩ: Do not operate, contact maintenance
+
+Step 3: Check Bearing Temperature
+- Touch motor bearing housing carefully
+- Normal: 60-75°C
+- Action if > 80°C: Stop immediately, investigate bearing
+
+Step 4: Listen for Mechanical Sounds
+- Squealing: Bearing wear (schedule replacement)
+- Grinding: Pump cavitation (check suction pressure)
+- Clunking: Loose components (mechanical inspection needed)
+
+1.3 RESTART PROCEDURE
+1. Wait minimum 5 minutes after trip
+2. Verify suction pressure is above 2 bar
+3. Verify discharge back pressure is stable
+4. Attempt restart with reduced speed if available
+5. If trip repeats within 30 minutes, investigate root cause before further restart attempts
+
+2. THERMAL MANAGEMENT
+Motors generate heat during operation due to resistive losses.
+
+2.1 COOLING REQUIREMENTS
+- Ambient air circulation required around motor frame
+- Minimum 0.5 m³/min air flow
+- Avoid dust accumulation on cooling fins
+- Keep motor area clean and unobstructed
+
+2.2 BEARING LUBRICATION
+- High-temperature grease required for thermal loads
+- Bearing life: 40,000-50,000 operating hours
+- Quarterly inspection for wear
+- Annual regreasing recommended
+- Signs of wear: increased noise, temperature rise, vibration
+
+3. VIBRATION ANALYSIS
+Excessive vibration indicates mechanical degradation.
+
+3.1 VIBRATION LIMITS
+- Acceptable: < 4.0 mm/s RMS
+- Warning: 4.0-5.5 mm/s (schedule maintenance)
+- Alarm: > 5.5 mm/s (reduce load, prepare shutdown)
+
+3.2 VIBRATION CAUSES
+- Cavitation (pump): Typically horizontal axis
+- Bearing wear: Radial direction, increases gradually
+- Misalignment: Axial vibration component
+- Looseness: Multiple frequency components
+- Imbalance: Vertical direction, constant
+
+3.3 VIBRATION MITIGATION
+- Reduce pump speed by 10-15%
+- Increase suction pressure if possible
+- Check foundation bolts are tight
+- Verify pump-motor coupling alignment
+- Schedule precision alignment if misalignment suspected
+
+4. PREVENTIVE MAINTENANCE SCHEDULE
+
+DAILY
+- Visual inspection for leaks or damage
+- Listen for unusual sounds
+- Check motor frame temperature with touch
+- Record vibration level if instrumented
+
+WEEKLY
+- Measure bearing temperature at 4 points
+- Check air circulation around motor
+- Inspect for dust or debris accumulation
+
+MONTHLY
+- Measure insulation resistance (megohm check)
+- Verify cooling water flow if water-cooled
+- Check for any visible cracking or damage
+- Review operational hours counter
+
+QUARTERLY
+- Perform detailed vibration spectrum analysis
+- Inspect motor mounting bolts
+- Check bearing lubrication
+- Measure winding temperature
+
+ANNUALLY
+- Professional motor service inspection
+- Bearing replacement if > 40,000 hours
+- Insulation system testing
+- Shaft alignment check
+- Thermal camera survey
+
+5. ALARM RESPONSE PROCEDURES
+
+Motor Overload Alarm (Thermal Protection)
+- Indicates motor current drawing 110-125% of rated current
+- Cause: High pump discharge pressure, cavitation, or mechanical resistance
+- Action: Reduce pump speed, verify system pressure, check suction
+- If alarm clears within 2 minutes: Monitor closely
+- If alarm persists: Reduce load further or initiate shutdown
+
+Motor Phase Imbalance Alarm
+- Occurs when three-phase motor receives unbalanced current
+- Cause: Electrical supply issue or motor winding fault
+- Action: Contact electrical maintenance immediately
+- Do not continue operation if imbalance > 5%
+
+Motor Bearing Temperature Alarm
+- Triggered when bearing temperature > 85°C
+- Common cause: Pump cavitation, high vibration
+- Action: Reduce pump speed immediately
+- Investigate suction pressure and vibration
+- If temperature does not drop within 10 minutes: Shutdown
+
+6. MOTOR SELECTION FOR CRITICAL APPLICATIONS
+When selecting replacement motors for high-reliability systems:
+- Ensure motor is sized for actual pump duty (not just nominal)
+- Specify high-efficiency motor (IE3 or better)
+- Consider thermal class F for thermal margin
+- Request thermal protection with adjustable setpoint
+- Verify bearing design is appropriate for vibration environment
+- Check alignment and coupling quality
+
+7. MAINTENANCE LOG REQUIREMENTS
+Record for every motor service event:
+- Date and time
+- Service performed (inspection, lubrication, repair)
+- Motor temperature before and after
+- Bearing condition assessment
+- Any replacement parts used
+- Operator and technician names
+- Next scheduled service date
+- Any recommendations noted
+
+---
+Revision: 3.2 | Issue Date: 2025-11-15 | Next Review: 2026-11-15

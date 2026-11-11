@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  alarm-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile.simulator
+    environment:
+      ALARM_API_TOKEN: ${ALARM_API_TOKEN:-demo-token}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - alarm-copilot
+
+  alarm-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    environment:
+      ALARM_API_BASE_URL: http://alarm-simulator:8000
+      ALARM_API_TOKEN: ${ALARM_API_TOKEN:-demo-token}
+    ports:
+      - "9000:9000"
+    depends_on:
+      alarm-simulator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9000/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - alarm-copilot
+
+  copilot-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.copilot
+    environment:
+      ALARM_API_BASE_URL: http://alarm-simulator:8000
+      ALARM_API_TOKEN: ${ALARM_API_TOKEN:-demo-token}
+      MCP_SERVER_URL: http://alarm-mcp:9000
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:1.5b}
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-10m}
+      OLLAMA_NUM_CTX: ${OLLAMA_NUM_CTX:-2048}
+      OLLAMA_NUM_GPU: ${OLLAMA_NUM_GPU:-0}
+      OLLAMA_NUM_PREDICT: ${OLLAMA_NUM_PREDICT:-512}
+      MAX_MCP_TOOL_ROUNDS: ${MAX_MCP_TOOL_ROUNDS:-3}
+      VECTOR_STORE_PATH: /app/rag/qdrant_data
+      DOCUMENT_PATH: /app/rag/documents
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./rag/qdrant_data:/app/rag/qdrant_data
+      - ./rag/documents:/app/rag/documents
+    depends_on:
+      alarm-simulator:
+        condition: service_healthy
+      alarm-mcp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - alarm-copilot
+
+  frontend:
+    build:
+      context: ./apps/frontend
+    ports:
+      - "3000:3000"
+    environment:
+      COPILOT_API_URL: http://copilot-backend:8001
+    depends_on:
+      copilot-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3000/_stcore/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - alarm-copilot
+
+networks:
+  alarm-copilot:
+    driver: bridge
