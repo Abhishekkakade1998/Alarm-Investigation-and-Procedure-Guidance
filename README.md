@@ -490,10 +490,4 @@ docker-compose.yml
 .env.example
 ```
 
-## Assignment and status
 
-**Use case:** Alarm Investigation and Procedure Guidance Copilot.
-
-The project is a development prototype. Demo screenshots/video are not
-included. Review the current [known limitations](docs/known-limitations.md)
-before presenting or extending it.
