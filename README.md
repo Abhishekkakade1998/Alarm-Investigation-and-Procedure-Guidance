@@ -257,6 +257,21 @@ tool. Provide either `asset_id` or `site`; for example, use
 `{"site":"EastRefinery","page_size":200}` to retrieve the simulator's site-wide
 records.
 
+## Postman collections
+
+The `postman/` directory contains the supplied Postman collections for
+exercising the alarm simulator API:
+
+- `Alarm-API-Simulator.postman_collection.json` — individual API requests.
+- `chaining/Alarm-API-Chaining.postman_collection.json` — multi-step API
+  chaining scenarios.
+- `scenarios/Alarm-API-Scenarios.postman_collection.json` — scenario requests.
+
+Import a collection into Postman, start the alarm simulator, and use the
+collection's `baseUrl` and `auth_token` variables. The default local values are
+`http://localhost:8000` and `demo-token`. These collections test the HTTP
+simulator API; they do not call the MCP server or the copilot UI.
+
 ### MCP tools (`:9000`)
 
 The MCP server exposes eight dynamically discovered tools:
@@ -289,7 +304,7 @@ The ingester splits text into overlapping word chunks, embeds them with
 `sentence-transformers/all-MiniLM-L6-v2`, and stores vectors and metadata in
 the Qdrant local collection `alarm_procedures`. No separate Qdrant server is
 needed. Qdrant's local database is stored at `rag/qdrant_data` by default; the
-top-level `vector-store` directory is not used by the app.
+database files are generated locally and excluded from Git.
 
 To re-ingest documents locally, stop the backend first and run from the project
 root:
@@ -403,9 +418,8 @@ exist under `rag/documents`, and re-ingest with the backend stopped:
 python -m rag.ingestion.ingester
 ```
 
-The app uses `rag/qdrant_data` by default, not the unused top-level
-`vector-store` directory. When running in Docker, check that the Qdrant data
-volume and document mount are present.
+The app uses `rag/qdrant_data` by default. When running in Docker, check that
+the Qdrant data volume and document mount are present.
 
 ### Slow investigations
 
@@ -459,6 +473,10 @@ rag/
   ingestion/
     ingester.py                # Chunking, embedding, Qdrant ingestion/retrieval
   qdrant_data/                 # Local Qdrant persistence (generated)
+postman/
+  *.postman_collection.json    # Alarm API test collection
+  chaining/                    # Multi-step API chaining collection
+  scenarios/                   # API scenario collection
 tests/
   unit/
   integration/
