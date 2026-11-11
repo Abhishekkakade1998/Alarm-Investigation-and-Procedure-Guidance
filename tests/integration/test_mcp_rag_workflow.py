@@ -82,13 +82,24 @@ def test_investigation_combines_mcp_chaining_and_rag_evidence():
             if name == "search_assets":
                 assert arguments["query"] == "Boiler Feed Pump 101"
                 return SimpleNamespace(
-                    content=[SimpleNamespace(text='{"asset_id": "A001"}')],
+                    content=[SimpleNamespace(text=json.dumps({
+                        "total": 1,
+                        "results": [{
+                            "asset_id": "A001",
+                            "asset_name": "Boiler Feed Pump 101",
+                        }],
+                    }))],
                     isError=False,
                 )
             assert name == "get_alarms"
             assert arguments["asset_id"] == "A001"
             return SimpleNamespace(
-                content=[SimpleNamespace(text='{"alarm_name": "High Discharge Pressure"}')],
+                content=[SimpleNamespace(text=json.dumps({
+                    "data": [{
+                        "alarm_id": "ALM-A001-003",
+                        "alarm_name": "High Discharge Pressure",
+                    }],
+                }))],
                 isError=False,
             )
 
@@ -104,7 +115,9 @@ def test_investigation_combines_mcp_chaining_and_rag_evidence():
     ))
 
     assert response.answer.startswith("Review pump_procedure.txt")
-    assert [call.tool_name for call in response.mcp_calls] == ["search_assets", "get_alarms"]
+    assert [
+        call.tool_name for call in response.mcp_calls if not call.cached
+    ] == ["search_assets", "get_alarms"]
     assert response.rag_sources[0].source == "pump_procedure.txt"
     assert response.performance.rag_ms >= 0
     assert len(response.performance.ollama_calls_ms) == 3
@@ -144,41 +157,15 @@ def test_acceptance_scenario_uses_simulator_mcp_tools_and_rag():
             }]
 
     class FakeOllama:
-        def __init__(self):
-            self.call_number = 0
-
         async def chat(self, messages, tools=None):
-            self.call_number += 1
             assert "pump_operating_procedure.txt" in messages[1]["content"]
-            if self.call_number == 1:
-                assert {tool["function"]["name"] for tool in tools} >= {
-                    "search_assets", "get_alarms", "operator_recommendations"
-                }
-                return {"content": "", "tool_calls": [{
-                    "function": {
-                        "name": "search_assets",
-                        "arguments": {"query": "Boiler Feed Pump 101"},
-                    }
-                }]}
-            if self.call_number == 2:
-                assert '"asset_id": "A001"' in messages[-1]["content"]
-                return {"content": "", "tool_calls": [{
-                    "function": {
-                        "name": "get_alarms",
-                        "arguments": {"asset_id": "A001", "page": 1},
-                    }
-                }]}
-            if self.call_number == 3:
-                assert "ALM-A001-003" in messages[-1]["content"]
-                return {"content": "", "tool_calls": [{
-                    "function": {
-                        "name": "operator_recommendations",
-                        "arguments": {"alarm_id": "ALM-A001-003"},
-                    }
-                }]}
-            assert tools is None
-            assert "Flow Rate Low" in messages[-1]["content"]
-            assert "Follow the approved site procedure" in messages[-1]["content"]
+            assert tools is not None
+            assert {tool["function"]["name"] for tool in tools} >= {
+                "search_assets", "get_alarms", "operator_recommendations"
+            }
+            assert "Boiler Feed Pump 101" in messages[1]["content"]
+            assert "ALM-A001-009" in messages[1]["content"]
+            assert '"recommendations"' in messages[1]["content"]
             return {
                 "content": (
                     "Boiler Feed Pump 101 has an active critical Flow Rate Low "
@@ -219,7 +206,9 @@ def test_acceptance_scenario_uses_simulator_mcp_tools_and_rag():
     response = asyncio.run(run_investigation())
 
     assert "active critical Flow Rate Low" in response.answer
-    assert [call.tool_name for call in response.mcp_calls] == [
+    assert [
+        call.tool_name for call in response.mcp_calls if not call.cached
+    ] == [
         "search_assets",
         "get_alarms",
         "operator_recommendations",
@@ -311,11 +300,16 @@ def test_acceptance_scenario_uses_simulator_mcp_tools_and_rag():
             "batches": [
                 [("get_alarms", {"asset_id": "A004"})],
                 [
-                    ("get_alarm_by_id", {"alarm_id": "ALM-A004-004"}),
-                    ("operator_recommendations", {"alarm_id": "ALM-A004-004"}),
+                    ("get_alarm_by_id", {"alarm_id": "ALM-A004-009"}),
+                    ("operator_recommendations", {"alarm_id": "ALM-A004-009"}),
                 ],
             ],
-            "calls": ["get_alarms", "get_alarm_by_id", "operator_recommendations"],
+            "calls": [
+                "search_assets",
+                "get_alarms",
+                "get_alarm_by_id",
+                "operator_recommendations",
+            ],
             "use_rag": True,
             "rag_source": "motor_troubleshooting_guide.txt",
             "rag_content": (
@@ -416,7 +410,9 @@ def test_assignment_example_questions_use_available_evidence(scenario):
     )))
 
     assert response.answer.startswith("Evidence reviewed")
-    assert [call.tool_name for call in response.mcp_calls] == scenario["calls"]
+    assert [
+        call.tool_name for call in response.mcp_calls if not call.cached
+    ] == scenario["calls"]
     assert all(call.error is None for call in response.mcp_calls)
     assert [
         source.source for source in response.rag_sources
@@ -542,6 +538,38 @@ def test_investigation_does_not_present_failed_mcp_call_as_verified():
     assert "get_alarms" in response.answer
     assert response.confidence == 0
     assert response.mcp_calls[0].error == "simulator unavailable"
+
+
+def test_live_alarm_question_without_tool_calls_returns_unverified_notice():
+    class FakeOllama:
+        async def chat(self, _messages, tools=None):
+            assert tools is not None
+            return {"content": "The top alarm is a motor trip; restart after five minutes."}
+
+    class FakeRegistry:
+        @asynccontextmanager
+        async def connect(self):
+            yield object()
+
+        async def list_tools(self, _session):
+            return [SimpleNamespace(
+                name="get_alarms",
+                description="Get alarms",
+                inputSchema={"type": "object"},
+            )]
+
+    response = asyncio.run(copilot.CopilotOrchestrator(
+        FakeOllama(), FakeRegistry(), None
+    ).investigate(copilot.InvestigationRequest(
+        query="Which alarm has the highest priority at EastRefinery?",
+        use_rag=False,
+        use_mcp=True,
+    )))
+
+    assert response.mcp_calls == []
+    assert "no successful MCP alarm-list result" in response.answer
+    assert "motor trip" not in response.answer
+    assert response.confidence == 0
 
 
 def test_failed_supplemental_correlation_keeps_successful_alarm_pattern():
